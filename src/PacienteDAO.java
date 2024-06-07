@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class PacienteDAO {
     public void createPaciente(Paciente paciente) {
-        String sql = "INSERT INTO Pacientes (id, nombre, apellido, fecha_nacimiento, direccion, telefono) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Pacientes (nombre, apellido, fecha_nacimiento, direccion, telefono) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, paciente.getId());
