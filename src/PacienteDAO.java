@@ -4,22 +4,21 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class PacienteDAO {
-    public void createPaciente(Paciente paciente) {
-        String sql = "INSERT INTO Pacientes (nombre, apellido, fecha_nacimiento, direccion, telefono) VALUES (?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, paciente.getId());
-            pstmt.setString(2, paciente.getNombre());
-            pstmt.setString(3, paciente.getApellido());
-            pstmt.setDate(4, paciente.getFechaNacimiento());
-            pstmt.setString(5, paciente.getDireccion());
-            pstmt.setString(6, paciente.getTelefono());
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+public void createPaciente(Paciente paciente) {
+    String sql = "INSERT INTO Pacientes (nombre, apellido, fecha_nacimiento, direccion, telefono) VALUES (?, ?, ?, ?, ?)";
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setString(1, paciente.getNombre());
+        pstmt.setString(2, paciente.getApellido());
+        pstmt.setDate(3, paciente.getFechaNacimiento());
+        pstmt.setString(4, paciente.getDireccion());
+        pstmt.setString(5, paciente.getTelefono());
+        pstmt.executeUpdate();
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+}
+
 
     public Paciente readPaciente(int id) {
         String sql = "SELECT * FROM Pacientes WHERE id = ?";
