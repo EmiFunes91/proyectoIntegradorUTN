@@ -1,70 +1,21 @@
-// Paciente.java
-import java.sql.Date;
+import java.time.LocalDate;
 
-public class Paciente {
-    private int id;
-    private String nombre;
-    private String apellido;
-    private Date fechaNacimiento;
-    private String direccion;
-    private String telefono;
+public class Paciente extends Persona {
+    private LocalDate fechaNacimiento;
 
-    // Constructor, getters y setters
-
-    public Paciente(int id, String nombre, String apellido, Date fechaNacimiento, String direccion, String telefono) {
-        this.id = id;
-        this.nombre = nombre;
-        this.apellido = apellido;
+    // Constructor
+    public Paciente(int id, String nombre, String apellido, LocalDate fechaNacimiento, String direccion, String telefono) {
+        super(id, nombre, apellido, direccion, telefono);
         this.fechaNacimiento = fechaNacimiento;
-        this.direccion = direccion;
-        this.telefono = telefono;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getApellido() {
-        return apellido;
-    }
-
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
-    }
-
-    public Date getFechaNacimiento() {
+    // Getters y Setters
+    public LocalDate getFechaNacimiento() {
         return fechaNacimiento;
     }
 
-    public void setFechaNacimiento(Date fechaNacimiento) {
+    public void setFechaNacimiento(LocalDate fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
     }
-
-    public String getDireccion() {
-        return direccion;
-    }
-
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
-    }
 }
+
