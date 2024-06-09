@@ -1,41 +1,37 @@
 public class Sector {
 
-  
-   private String nombreSector;
-   private int cantCamas;
-   private boolean reservable;
-   
-   public Sector (String nombreSector, int CantCamas, boolean reservable) {
-    
-  
+  private String nombreSector;
+  private int cantCamas;
+  private boolean reservable;
+
+  public Sector(String nombreSector, int cantCamas, boolean reservable) {
     this.nombreSector = nombreSector;
     this.cantCamas = cantCamas;
     this.reservable = reservable;
-   }
+  }
 
-   public String getNombreSector() {
+  public String getNombreSector() {
     return nombreSector;
-   }
+  }
 
-   public void setNombreSector() {
+  public void setNombreSector(String nombreSector) {
     this.nombreSector = nombreSector;
-   }
-   
-   public int getCantCamas () {
+  }
+
+  public int getCantCamas() {
     return cantCamas;
-   }
-   
-   public void setCantCamas () {
+  }
+
+  public void setCantCamas(int cantCamas) {
     this.cantCamas = cantCamas;
-   }
-   
-   public boolean getReservable () {
-    return reservable; 
-   }
-   
-   public void setReservable () {
+  }
+
+  public boolean isReservable() {
+    return reservable;
+  }
+
+  public void setReservable(boolean reservable) {
     this.reservable = reservable;
   }
 
 }
-

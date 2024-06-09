@@ -3,64 +3,72 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public void createSector (Sector sector) {
+public class SectorDAO {
 
-String sql = "INSERT INTO Sectores (NombreSector, CantCamas, Reservable) VALUES (?,?,?)";
- try (Connection conn = DatabaseConnection.getConnection();
+  public void createSector(Sector sector) {
+    String sql = "INSERT INTO Sectores (NombreSector, CantCamas, Reservable) VALUES (?,?,?)";
+    try (Connection conn = DatabaseConnection.getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
-         pstmt.setString(1, sector.getNombreSector());
-         pstmt.setInt(2, sector.getCantCamas());
-         pstmt.setBool(3, sector.getReservable());
-         pstmt.executeUpdate();
-
-         } catch (SQLException e) {
-            e.printStackTrace();
-         }
-     }
-     
-public Sector readSector (int IDSector) {
-   String sql = "SELECT p.IDSector, p.NombreSector, p.CantCamas, p.Reservable WHERE p.IDSector = ?";
-   Sector sector = null;
-   try (Connection conn = DatabaseConnection.getConnection();
-   PreparedStatement pstmt = conn.prepareStatement(sql)) {
-      pstmt.setInt(1, IDSector);
-      ResultSet rs pstmt.executeQuery();
-
-      if (rs.next()) {
-         sector = new Sector (
-            rs.getString("NombreSector"),
-            rs.getInt("CantCamas"),
-            rs.getBool("Reservable"),
-         );   
-      }
-      
-   } catch (SQLException e) {
-      e.printStackTrace();
-   }
-
-   return sector;
-
-}
-
-public void updateSector (Sector sector) {
-
-   String sql = "UPDATE Sectores NombreSector = ?, CantCamas = ?, Reservable = ? WHERE IDSector = ?";
-   try (Connection conn = DatabaseConnection.getConnection()) {
-            conn.setAutoCommit(false);  // Start transaction
-            try (PreparedStatement pstmtSectores = conn.prepareStatement(sqlSectores)) {
-
-               pstmtSectores.setString(1, sector.getNombreSector);
-               pstmtSectores.setInt(2, sector.getCantCamas);
-               pstmtSectores.getBool(3, sector.getReservable);
-               pstmtSectores.executeUpdate();
-
-               conn.commit();
-               
-             } catch (SQLException e) {
-               conn.rollback();
-               e.printStackTrace();
-             }
+        pstmt.setString(1, sector.getNombreSector());
+        pstmt.setInt(2, sector.getCantCamas());
+        pstmt.setBoolean(3, sector.isReservable());
+        pstmt.executeUpdate();
     } catch (SQLException e) {
-      e.printStackTrace();
+        e.printStackTrace();
     }
+  }
+
+  public Sector readSector(int IDSector) {
+    String sql = "SELECT p.IDSector, p.NombreSector, p.CantCamas, p.Reservable FROM Sectores p WHERE p.IDSector = ?";
+    Sector sector = null;
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setInt(1, IDSector);
+        ResultSet rs = pstmt.executeQuery();
+
+        if (rs.next()) {
+            sector = new Sector(
+                rs.getString("NombreSector"),
+                rs.getInt("CantCamas"),
+                rs.getBoolean("Reservable")
+            );
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return sector;
+  }
+
+  public void updateSector(Sector sector, int IDSector) {
+    String sql = "UPDATE Sectores SET NombreSector = ?, CantCamas = ?, Reservable = ? WHERE IDSector = ?";
+    try (Connection conn = DatabaseConnection.getConnection()) {
+        conn.setAutoCommit(false);  // Start transaction
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, sector.getNombreSector());
+            pstmt.setInt(2, sector.getCantCamas());
+            pstmt.setBoolean(3, sector.isReservable());
+            pstmt.setInt(4, IDSector);
+            pstmt.executeUpdate();
+            conn.commit();
+        } catch (SQLException e) {
+            conn.rollback();
+            e.printStackTrace();
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+  }
+
+  public void deleteSector(int IDSector) {
+    String sql = "DELETE FROM Sectores WHERE IDSector = ?";
+    try (Connection conn = DatabaseConnection.getConnection();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setInt(1, IDSector);
+        pstmt.executeUpdate();
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+  }
+
 }
