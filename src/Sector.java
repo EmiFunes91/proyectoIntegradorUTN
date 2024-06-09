@@ -1,23 +1,24 @@
 public class Sector {
 
-   private String identificador;
+  
+   private String nombreSector;
    private int cantCamas;
    private boolean reservable;
    
-   public Sector (String identificador, int CantCamas, boolean reservable) {
+   public Sector (String nombreSector, int CantCamas, boolean reservable) {
     
-    this.identificador = identificador;
+  
+    this.nombreSector = nombreSector;
     this.cantCamas = cantCamas;
     this.reservable = reservable;
    }
-    
-   public String getIdentificador () {
-    return identificador;
-    
+
+   public String getNombreSector() {
+    return nombreSector;
    }
-   
-   public void setIdentificador () { 
-    this.identificador = identificador;
+
+   public void setNombreSector() {
+    this.nombreSector = nombreSector;
    }
    
    public int getCantCamas () {
