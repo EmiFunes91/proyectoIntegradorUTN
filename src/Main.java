@@ -5,37 +5,38 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        try (Scanner scanner = new Scanner(System.in)) {
-            System.out.println("Ingrese el nombre del paciente:");
-            String nombre = scanner.nextLine();
+        @SuppressWarnings("resource")
+        Scanner scanner = new Scanner(System.in);
 
-            System.out.println("Ingrese el apellido del paciente:");
-            String apellido = scanner.nextLine();
+        System.out.println("Ingrese el nombre del paciente:");
+        String nombre = scanner.nextLine();
 
-            System.out.println("Ingrese la dirección del paciente:");
-            String direccion = scanner.nextLine();
+        System.out.println("Ingrese el apellido del paciente:");
+        String apellido = scanner.nextLine();
 
-            System.out.println("Ingrese el teléfono del paciente:");
-            String telefono = scanner.nextLine();
+        System.out.println("Ingrese la dirección del paciente:");
+        String direccion = scanner.nextLine();
 
-            String sql = "INSERT INTO Personas (nombre, apellido, direccion, telefono) VALUES (?, ?, ?, ?)";
+        System.out.println("Ingrese el teléfono del paciente:");
+        String telefono = scanner.nextLine();
 
-            try (Connection connection = DatabaseConnection.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        String sql = "INSERT INTO Personas (nombre, apellido, direccion, telefono) VALUES (?, ?, ?, ?)";
 
-                preparedStatement.setString(1, nombre);
-                preparedStatement.setString(2, apellido);
-                preparedStatement.setString(3, direccion);
-                preparedStatement.setString(4, telefono);
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-                int rowsAffected = preparedStatement.executeUpdate();
-                if (rowsAffected > 0) {
-                    System.out.println("Paciente insertado exitosamente.");
-                }
+            preparedStatement.setString(1, nombre);
+            preparedStatement.setString(2, apellido);
+            preparedStatement.setString(3, direccion);
+            preparedStatement.setString(4, telefono);
 
-            } catch (SQLException e) {
-                e.printStackTrace();
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Paciente insertado exitosamente.");
             }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }
