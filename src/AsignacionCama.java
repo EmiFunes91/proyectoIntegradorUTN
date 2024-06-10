@@ -1,4 +1,5 @@
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class AsignacionCama {
     private int id;
@@ -12,6 +13,13 @@ public class AsignacionCama {
         this.idEnfermera = idEnfermera;
         this.idCama = idCama;
         this.fecha = fecha;
+        this.turno = turno;
+    }
+
+    public AsignacionCama(int idEnfermera, int idCama, LocalDateTime fecha, String turno) {
+        this.idEnfermera = idEnfermera;
+        this.idCama = idCama;
+        this.fecha = fecha.toLocalDate();
         this.turno = turno;
     }
 
@@ -55,4 +63,9 @@ public class AsignacionCama {
     public void setTurno(String turno) {
         this.turno = turno;
     }
+
+    public void setFecha(LocalDateTime nuevaFecha) {
+        this.fecha = nuevaFecha.toLocalDate();
+    }
 }
+

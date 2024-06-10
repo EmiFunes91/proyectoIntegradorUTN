@@ -1,39 +1,11 @@
-public class Medico {
-    private int id;
-    private String nombre;
-    private String apellido;
+class Medico extends Persona {
     private String especialidad;
+    private String tipo;
 
-    public Medico(int id, String nombre, String apellido, String especialidad) {
-        this.id = id;
-        this.nombre = nombre;
-        this.apellido = apellido;
+    public Medico(int id, String nombre, String apellido, String direccion, String telefono, String especialidad, String tipo) {
+        super(id, nombre, apellido, direccion, telefono);
         this.especialidad = especialidad;
-    }
-
-    // Getters y Setters
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getApellido() {
-        return apellido;
-    }
-
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
+        this.tipo = tipo;
     }
 
     public String getEspecialidad() {
@@ -42,6 +14,14 @@ public class Medico {
 
     public void setEspecialidad(String especialidad) {
         this.especialidad = especialidad;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 }
 
