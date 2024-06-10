@@ -12,7 +12,8 @@ public class Main {
             System.out.println("2. Insertar nuevo sector");
             System.out.println("3. Insertar asignación a cama");
             System.out.println("4. Insertar nuevo médico");
-            System.out.println("5. Salir");
+            System.out.println("5. Insertar historia clínica");
+            System.out.println("6. Salir");
 
             int opcion = scanner.nextInt();
             scanner.nextLine(); // Consume newline
@@ -31,6 +32,9 @@ public class Main {
                     insertarMedico(scanner);
                     break;
                 case 5:
+                    insertarHistoriaClinica(scanner);
+                    break;
+                case 6:
                     System.out.println("Saliendo...");
                     return;
                 default:
@@ -99,7 +103,7 @@ public class Main {
         System.out.println("Ingrese el turno:");
         String turno = scanner.nextLine();
 
-        AsignacionCama asignacionCama = new AsignacionCama(idEnfermera,idCama, idCama, fecha, turno);
+        AsignacionCama asignacionCama = new AsignacionCama(idEnfermera, idCama, idCama, fecha, turno);
         asignacionCamaDAO.createAsignacionCama(asignacionCama);
 
         System.out.println("Asignación a cama insertada exitosamente.");
@@ -121,5 +125,28 @@ public class Main {
         medicoDAO.createMedico(medico);
 
         System.out.println("Médico insertado exitosamente.");
+    }
+
+    private static void insertarHistoriaClinica(Scanner scanner) {
+        HistoriaClinicaDAO historiaClinicaDAO = new HistoriaClinicaDAO();
+
+        System.out.println("Ingrese el ID del paciente:");
+        int idPaciente = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        System.out.println("Ingrese la descripción de la historia clínica:");
+        String problema = scanner.nextLine();
+
+        System.out.println("Ingrese la descripción el tratamiento del paciente:");
+        String tratamiento = scanner.nextLine();
+
+        System.out.println("Ingrese la fecha de creación (yyyy-mm-dd):");
+        String fechaCreacionStr = scanner.nextLine();
+        LocalDate fechaCreacion = LocalDate.parse(fechaCreacionStr);
+
+        HistoriaClinica historiaClinica = new HistoriaClinica(0, idPaciente, problema, tratamiento, fechaCreacion);
+        historiaClinicaDAO.createHistoriaClinica(historiaClinica);
+
+        System.out.println("Historia clínica insertada exitosamente.");
     }
 }
