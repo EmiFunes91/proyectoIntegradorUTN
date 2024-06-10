@@ -137,7 +137,7 @@ public class Main {
         System.out.println("Ingrese la descripción de la historia clínica:");
         String problema = scanner.nextLine();
 
-        System.out.println("Ingrese la descripción el tratamiento del paciente:");
+        System.out.println("Ingrese la descripción del tratamiento del paciente:");
         String tratamiento = scanner.nextLine();
 
         System.out.println("Ingrese la fecha de creación (yyyy-mm-dd):");
