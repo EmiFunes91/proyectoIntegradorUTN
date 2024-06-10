@@ -10,10 +10,12 @@ public class Main {
             System.out.println("Seleccione una opción:");
             System.out.println("1. Insertar nuevo paciente");
             System.out.println("2. Insertar nuevo sector");
-            System.out.println("3. Salir");
+            System.out.println("3. Insertar asignación a cama");
+            System.out.println("4. Insertar nuevo médico");
+            System.out.println("5. Salir");
 
             int opcion = scanner.nextInt();
-            scanner.nextLine();  // Consume newline
+            scanner.nextLine(); // Consume newline
 
             switch (opcion) {
                 case 1:
@@ -23,6 +25,12 @@ public class Main {
                     insertarSector(scanner);
                     break;
                 case 3:
+                    insertarAsignacionCama(scanner);
+                    break;
+                case 4:
+                    insertarMedico(scanner);
+                    break;
+                case 5:
                     System.out.println("Saliendo...");
                     return;
                 default:
@@ -73,5 +81,45 @@ public class Main {
 
         System.out.println("Sector insertado exitosamente.");
     }
-}
 
+    private static void insertarAsignacionCama(Scanner scanner) {
+        AsignacionCamaDAO asignacionCamaDAO = new AsignacionCamaDAO(null);
+
+        System.out.println("Ingrese el ID de la enfermera:");
+        int idEnfermera = scanner.nextInt();
+
+        System.out.println("Ingrese el ID de la cama:");
+        int idCama = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        System.out.println("Ingrese la fecha (yyyy-mm-dd):");
+        String fechaStr = scanner.nextLine();
+        LocalDate fecha = LocalDate.parse(fechaStr, DateTimeFormatter.ISO_LOCAL_DATE);
+
+        System.out.println("Ingrese el turno:");
+        String turno = scanner.nextLine();
+
+        AsignacionCama asignacionCama = new AsignacionCama(idEnfermera, idCama, idCama, fecha, turno);
+        asignacionCamaDAO.createAsignacionCama(asignacionCama);
+
+        System.out.println("Asignación a cama insertada exitosamente.");
+    }
+
+    private static void insertarMedico(Scanner scanner) {
+        MedicoDAO medicoDAO = new MedicoDAO(null);
+
+        System.out.println("Ingrese el nombre del médico:");
+        String nombre = scanner.nextLine();
+
+        System.out.println("Ingrese el apellido del médico:");
+        String apellido = scanner.nextLine();
+
+        System.out.println("Ingrese la especialidad del médico:");
+        String especialidad = scanner.nextLine();
+
+        Medico medico = new Medico(0, nombre, apellido, especialidad);
+        medicoDAO.create(medico);
+
+        System.out.println("Médico insertado exitosamente.");
+    }
+}
