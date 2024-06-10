@@ -83,7 +83,7 @@ public class Main {
     }
 
     private static void insertarAsignacionCama(Scanner scanner) {
-        AsignacionCamaDAO asignacionCamaDAO = new AsignacionCamaDAO(null);
+        AsignacionCamaDAO asignacionCamaDAO = new AsignacionCamaDAO();
 
         System.out.println("Ingrese el ID de la enfermera:");
         int idEnfermera = scanner.nextInt();
@@ -99,14 +99,14 @@ public class Main {
         System.out.println("Ingrese el turno:");
         String turno = scanner.nextLine();
 
-        AsignacionCama asignacionCama = new AsignacionCama(idEnfermera, idCama, idCama, fecha, turno);
+        AsignacionCama asignacionCama = new AsignacionCama(idEnfermera,idCama, idCama, fecha, turno);
         asignacionCamaDAO.createAsignacionCama(asignacionCama);
 
         System.out.println("Asignación a cama insertada exitosamente.");
     }
 
     private static void insertarMedico(Scanner scanner) {
-        MedicoDAO medicoDAO = new MedicoDAO(null);
+        MedicoDAO medicoDAO = new MedicoDAO();
 
         System.out.println("Ingrese el nombre del médico:");
         String nombre = scanner.nextLine();
@@ -118,7 +118,7 @@ public class Main {
         String especialidad = scanner.nextLine();
 
         Medico medico = new Medico(0, nombre, apellido, especialidad);
-        medicoDAO.create(medico);
+        medicoDAO.createMedico(medico);
 
         System.out.println("Médico insertado exitosamente.");
     }
