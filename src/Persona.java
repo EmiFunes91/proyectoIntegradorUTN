@@ -1,13 +1,11 @@
 public class Persona {
-    private int id;
     private String nombre;
     private String apellido;
     private String direccion;
     private String telefono;
 
     // Constructor
-    public Persona(int id, String nombre, String apellido, String direccion, String telefono) {
-        this.id = id;
+    public Persona(String nombre, String apellido, String direccion, String telefono) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.direccion = direccion;
@@ -15,13 +13,6 @@ public class Persona {
     }
 
     // Getters y Setters
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getNombre() {
         return nombre;

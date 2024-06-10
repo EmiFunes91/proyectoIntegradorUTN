@@ -11,14 +11,13 @@ public class EnfermeraDAO {
     }
 
     public void createEnfermera(Enfermera enfermera) {
-        String sql = "INSERT INTO enfermeras (id, nombre, apellido, direccion, telefono, area) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO enfermeras (nombre, apellido, direccion, telefono, area) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, enfermera.getId());
-            stmt.setString(2, enfermera.getNombre());
-            stmt.setString(3, enfermera.getApellido());
-            stmt.setString(4, enfermera.getDireccion());
-            stmt.setString(5, enfermera.getTelefono());
-            stmt.setString(6, enfermera.getArea());
+            stmt.setString(1, enfermera.getNombre());
+            stmt.setString(2, enfermera.getApellido());
+            stmt.setString(3, enfermera.getDireccion());
+            stmt.setString(4, enfermera.getTelefono());
+            stmt.setString(5, enfermera.getArea());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -32,7 +31,6 @@ public class EnfermeraDAO {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return new Enfermera(
-                        rs.getInt("id"),
                         rs.getString("nombre"),
                         rs.getString("apellido"),
                         rs.getString("direccion"),
@@ -54,7 +52,6 @@ public class EnfermeraDAO {
             stmt.setString(3, enfermera.getDireccion());
             stmt.setString(4, enfermera.getTelefono());
             stmt.setString(5, enfermera.getArea());
-            stmt.setInt(6, enfermera.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -78,7 +75,6 @@ public class EnfermeraDAO {
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 Enfermera enfermera = new Enfermera(
-                        rs.getInt("id"),
                         rs.getString("nombre"),
                         rs.getString("apellido"),
                         rs.getString("direccion"),
@@ -109,7 +105,6 @@ public class EnfermeraDAO {
         switch (opcion) {
             case 1:
                 System.out.println("Ingrese el ID de la enfermera:");
-                int id = scanner.nextInt();
                 scanner.nextLine(); // Limpiar el buffer de entrada
                 System.out.println("Ingrese el nombre de la enfermera:");
                 String nombre = scanner.nextLine();
@@ -122,7 +117,7 @@ public class EnfermeraDAO {
                 System.out.println("Ingrese el área de la enfermera:");
                 String area = scanner.nextLine();
 
-                Enfermera nuevaEnfermera = new Enfermera(id, nombre, apellido, direccion, telefono, area);
+                Enfermera nuevaEnfermera = new Enfermera(nombre, apellido, direccion, telefono, area);
                 enfermeraDAO.createEnfermera(nuevaEnfermera);
                 System.out.println("Nueva enfermera creada con éxito.");
                 break;

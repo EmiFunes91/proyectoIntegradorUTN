@@ -11,15 +11,14 @@ public class PacienteDAO {
     }
 
     public void createPaciente(Paciente paciente) {
-        String sql = "INSERT INTO pacientes (id, nombre, apellido, direccion, telefono, dni, fecha_nacimiento) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO pacientes (nombre, apellido, direccion, telefono, dni, fecha_nacimiento) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, paciente.getId());
-            stmt.setString(2, paciente.getNombre());
-            stmt.setString(3, paciente.getApellido());
-            stmt.setString(4, paciente.getDireccion());
-            stmt.setString(5, paciente.getTelefono());
-            stmt.setString(6, paciente.getDni());
-            stmt.setString(7, paciente.getFechaNacimiento());
+            stmt.setString(1, paciente.getNombre());
+            stmt.setString(2, paciente.getApellido());
+            stmt.setString(3, paciente.getDireccion());
+            stmt.setString(4, paciente.getTelefono());
+            stmt.setString(5, paciente.getDni());
+            stmt.setString(6, paciente.getFechaNacimiento());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -33,7 +32,6 @@ public class PacienteDAO {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return new Paciente(
-                        rs.getInt("id"),
                         rs.getString("nombre"),
                         rs.getString("apellido"),
                         rs.getString("direccion"),
@@ -79,7 +77,6 @@ public class PacienteDAO {
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 Paciente paciente = new Paciente(
-                        rs.getInt("id"),
                         rs.getString("nombre"),
                         rs.getString("apellido"),
                         rs.getString("direccion"),
@@ -109,9 +106,6 @@ public class PacienteDAO {
 
         switch (opcion) {
             case 1:
-                System.out.println("Ingrese el ID del paciente:");
-                int id = scanner.nextInt();
-                scanner.nextLine(); // Limpiar el buffer de entrada
                 System.out.println("Ingrese el nombre del paciente:");
                 String nombre = scanner.nextLine();
                 System.out.println("Ingrese el apellido del paciente:");
@@ -125,7 +119,7 @@ public class PacienteDAO {
                 System.out.println("Ingrese la fecha de nacimiento del paciente (AAAA-MM-DD):");
                 String fechaNacimiento = scanner.nextLine();
 
-                Paciente nuevoPaciente = new Paciente(id, nombre, apellido, direccion, telefono, dni, fechaNacimiento);
+                Paciente nuevoPaciente = new Paciente(nombre, apellido, direccion, telefono, dni, fechaNacimiento);
                 pacienteDAO.createPaciente(nuevoPaciente);
                 System.out.println("Nuevo paciente creado con éxito.");
                 break;

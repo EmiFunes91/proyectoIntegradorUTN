@@ -11,15 +11,14 @@ public class MedicoDAO {
     }
 
     public void createMedico(Medico medico) {
-        String sql = "INSERT INTO medicos (id, nombre, apellido, direccion, telefono, especialidad, tipo) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO medicos (nombre, apellido, direccion, telefono, especialidad, tipo) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, medico.getId());
-            stmt.setString(2, medico.getNombre());
-            stmt.setString(3, medico.getApellido());
-            stmt.setString(4, medico.getDireccion());
-            stmt.setString(5, medico.getTelefono());
-            stmt.setString(6, medico.getEspecialidad());
-            stmt.setString(7, medico.getTipo());
+            stmt.setString(1, medico.getNombre());
+            stmt.setString(2, medico.getApellido());
+            stmt.setString(3, medico.getDireccion());
+            stmt.setString(4, medico.getTelefono());
+            stmt.setString(5, medico.getEspecialidad());
+            stmt.setString(6, medico.getTipo());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -56,7 +55,6 @@ public class MedicoDAO {
             stmt.setString(4, medico.getTelefono());
             stmt.setString(5, medico.getEspecialidad());
             stmt.setString(6, medico.getTipo());
-            stmt.setInt(7, medico.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
