@@ -36,7 +36,7 @@ public class Reserva {
         return this.fechaYhora;
     }
 
-    void setFechaYHora () {
+    void setFechaYHora (String fechaYhora) {
         this.fechaYhora = fechaYhora;
     }
 
