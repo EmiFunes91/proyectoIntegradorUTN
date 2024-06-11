@@ -18,12 +18,12 @@ public class SectorDAO {
     }
   }
 
-  public Sector readSector(int IDSector) {
+  public Sector readSector(int idSector) {
     String sql = "SELECT p.IDSector, p.NombreSector, p.CantCamas, p.Reservable FROM Sectores p WHERE p.IDSector = ?";
     Sector sector = null;
     try (Connection conn = DatabaseConnection.getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
-        pstmt.setInt(1, IDSector);
+        pstmt.setInt(1, idSector);
         ResultSet rs = pstmt.executeQuery();
 
         if (rs.next()) {
@@ -40,7 +40,7 @@ public class SectorDAO {
     return sector;
   }
 
-  public void updateSector(Sector sector, int IDSector) {
+  public void updateSector(Sector sector, int idSector) {
     String sql = "UPDATE Sectores SET NombreSector = ?, CantCamas = ?, Reservable = ? WHERE IDSector = ?";
     try (Connection conn = DatabaseConnection.getConnection()) {
         conn.setAutoCommit(false);  // Start transaction
@@ -48,7 +48,7 @@ public class SectorDAO {
             pstmt.setString(1, sector.getNombreSector());
             pstmt.setInt(2, sector.getCantCamas());
             pstmt.setBoolean(3, sector.isReservable());
-            pstmt.setInt(4, IDSector);
+            pstmt.setInt(4, idSector);
             pstmt.executeUpdate();
             conn.commit();
         } catch (SQLException e) {
@@ -60,15 +60,16 @@ public class SectorDAO {
     }
   }
 
-  public void deleteSector(int IDSector) {
+  public void deleteSector(int idSector) {
     String sql = "DELETE FROM Sectores WHERE IDSector = ?";
     try (Connection conn = DatabaseConnection.getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
-        pstmt.setInt(1, IDSector);
+        pstmt.setInt(1, idSector);
         pstmt.executeUpdate();
     } catch (SQLException e) {
         e.printStackTrace();
     }
+
   }
 
 }

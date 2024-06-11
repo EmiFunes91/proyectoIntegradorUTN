@@ -4,12 +4,16 @@ public class Sector {
   private int cantCamas;
   private boolean reservable;
 
-  public Sector(String nombreSector, int cantCamas, boolean reservable) {
+
+  // Constructor
+  public Sector (String nombreSector, int cantCamas, boolean reservable) {
     this.nombreSector = nombreSector;
     this.cantCamas = cantCamas;
     this.reservable = reservable;
   }
 
+
+  // Getters y setters;
   public String getNombreSector() {
     return nombreSector;
   }
