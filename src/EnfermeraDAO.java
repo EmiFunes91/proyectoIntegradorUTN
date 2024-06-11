@@ -11,7 +11,7 @@ public class EnfermeraDAO {
     }
 
     public void createEnfermera(Enfermera enfermera) {
-        String sql = "INSERT INTO enfermeras (nombre, apellido, direccion, telefono, area) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO enfermeras (nombre, apellido, direccion, telefono, area) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, enfermera.getNombre());
             stmt.setString(2, enfermera.getApellido());

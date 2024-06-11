@@ -11,7 +11,7 @@ public class MedicoDAO {
     }
 
     public void createMedico(Medico medico) {
-        String sql = "INSERT INTO medicos (nombre, apellido, direccion, telefono, especialidad, tipo) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO medicos (nombre, apellido, direccion, telefono, especialidad, tipo) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, medico.getNombre());
             stmt.setString(2, medico.getApellido());

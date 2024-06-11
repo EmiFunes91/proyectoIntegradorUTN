@@ -11,7 +11,7 @@ public class PacienteDAO {
     }
 
     public void createPaciente(Paciente paciente) {
-        String sql = "INSERT INTO pacientes (nombre, apellido, direccion, telefono, dni, fecha_nacimiento) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO pacientes (nombre, apellido, direccion, telefono, dni, fecha_nacimiento) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, paciente.getNombre());
             stmt.setString(2, paciente.getApellido());
@@ -24,7 +24,7 @@ public class PacienteDAO {
             e.printStackTrace();
         }
     }
-
+    
     public Paciente readPaciente(String dni) {
         String sql = "SELECT * FROM pacientes WHERE dni = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
