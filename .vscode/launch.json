@@ -8,8 +8,8 @@
             "type": "java",
             "name": "Debug (Launch)",
             "request": "launch",
-            "mainClass": "com.example.Main",
-            "projectName": "my-java-project"
+            "mainClass": "Main",
+            "projectName": "proyectoIntegradorUTN_6105afbc",
         },
         {
             "type": "java",
@@ -28,7 +28,7 @@
             "name": "Main",
             "request": "launch",
             "mainClass": "Main",
-            "projectName": "proyectoIntegradorUTN_6105afbc"
-        },
+            "projectName": "proyectoIntegradorUTN_6105afbc",
+        }
     ]
 }
