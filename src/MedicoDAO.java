@@ -11,22 +11,39 @@ public class MedicoDAO {
     }
 
     public void createMedico(Medico medico) {
-        String sql = "INSERT INTO medicos (nombre, apellido, direccion, telefono, especialidad, tipo) VALUES (?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, medico.getNombre());
-            stmt.setString(2, medico.getApellido());
-            stmt.setString(3, medico.getDireccion());
-            stmt.setString(4, medico.getTelefono());
-            stmt.setString(5, medico.getEspecialidad());
-            stmt.setString(6, medico.getTipo());
-            stmt.executeUpdate();
+        String sqlPersona = "INSERT INTO Persona (nombre, apellido, direccion, telefono) VALUES (?, ?, ?, ?)";
+        String sqlMedico = "INSERT INTO Medico (id_persona, especialidad, tipo) VALUES (?, ?, ?)";
+        try (PreparedStatement stmtPersona = connection.prepareStatement(sqlPersona, Statement.RETURN_GENERATED_KEYS);
+             PreparedStatement stmtMedico = connection.prepareStatement(sqlMedico)) {
+
+            stmtPersona.setString(1, medico.getNombre());
+            stmtPersona.setString(2, medico.getApellido());
+            stmtPersona.setString(3, medico.getDireccion());
+            stmtPersona.setString(4, medico.getTelefono());
+            int affectedRows = stmtPersona.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("Creating person failed, no rows affected.");
+            }
+
+            try (ResultSet generatedKeys = stmtPersona.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    int idPersona = generatedKeys.getInt(1);
+                    stmtMedico.setInt(1, idPersona);
+                    stmtMedico.setString(2, medico.getEspecialidad());
+                    stmtMedico.setString(3, medico.getTipo());
+                    stmtMedico.executeUpdate();
+                } else {
+                    throw new SQLException("Creating person failed, no ID obtained.");
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public Medico readMedico(int id) {
-        String sql = "SELECT * FROM medicos WHERE id = ?";
+        String sql = "SELECT * FROM Medico INNER JOIN Persona ON Medico.id_persona = Persona.id WHERE Medico.id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
@@ -47,14 +64,16 @@ public class MedicoDAO {
     }
 
     public void updateMedico(Medico medico) {
-        String sql = "UPDATE medicos SET nombre = ?, apellido = ?, direccion = ?, telefono = ?, especialidad = ?, tipo = ? WHERE id = ?";
+        String sql = "UPDATE Medicos SET id_persona = ?, nombre = ?, apellido = ?, direccion = ?, telefono = ?, especialidad = ?, tipo = ? WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, medico.getNombre());
-            stmt.setString(2, medico.getApellido());
-            stmt.setString(3, medico.getDireccion());
-            stmt.setString(4, medico.getTelefono());
-            stmt.setString(5, medico.getEspecialidad());
-            stmt.setString(6, medico.getTipo());
+            stmt.setInt(1, medico.getIdPersona());
+            stmt.setString(2, medico.getNombre());
+            stmt.setString(3, medico.getApellido());
+            stmt.setString(4, medico.getDireccion());
+            stmt.setString(5, medico.getTelefono());
+            stmt.setString(6, medico.getEspecialidad());
+            stmt.setString(7, medico.getTipo());
+            stmt.setInt(8, medico.getId());
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

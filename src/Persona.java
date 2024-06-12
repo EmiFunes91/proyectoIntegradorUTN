@@ -1,4 +1,6 @@
 public class Persona {
+    private static int contadorId = 0;
+    private int id;
     private String nombre;
     private String apellido;
     private String direccion;
@@ -6,6 +8,7 @@ public class Persona {
 
     // Constructor
     public Persona(String nombre, String apellido, String direccion, String telefono) {
+        this.id = ++contadorId;
         this.nombre = nombre;
         this.apellido = apellido;
         this.direccion = direccion;
@@ -13,6 +16,10 @@ public class Persona {
     }
 
     // Getters y Setters
+
+    public int getId() {
+        return id;
+    }
 
     public String getNombre() {
         return nombre;
@@ -46,3 +53,4 @@ public class Persona {
         this.telefono = telefono;
     }
 }
+

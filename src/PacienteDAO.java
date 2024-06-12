@@ -11,15 +11,32 @@ public class PacienteDAO {
     }
 
     public void createPaciente(Paciente paciente) {
-        String sql = "INSERT INTO pacientes (nombre, apellido, direccion, telefono, dni, fecha_nacimiento) VALUES (?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, paciente.getNombre());
-            stmt.setString(2, paciente.getApellido());
-            stmt.setString(3, paciente.getDireccion());
-            stmt.setString(4, paciente.getTelefono());
-            stmt.setString(5, paciente.getDni());
-            stmt.setString(6, paciente.getFechaNacimiento());
-            stmt.executeUpdate();
+        // Insertar datos del paciente en la tabla persona
+        String sqlInsertPersona = "INSERT INTO Persona (nombre, apellido, direccion, telefono) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement stmtInsertPersona = connection.prepareStatement(sqlInsertPersona, Statement.RETURN_GENERATED_KEYS)) {
+            stmtInsertPersona.setString(1, paciente.getNombre());
+            stmtInsertPersona.setString(2, paciente.getApellido());
+            stmtInsertPersona.setString(3, paciente.getDireccion());
+            stmtInsertPersona.setString(4, paciente.getTelefono());
+            int affectedRows = stmtInsertPersona.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Creating persona failed, no rows affected.");
+            }
+            try (ResultSet generatedKeys = stmtInsertPersona.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    int idPersona = generatedKeys.getInt(1);
+                    // Insertar datos específicos del paciente en la tabla pacientes
+                    String sqlInsertPaciente = "INSERT INTO pacientes (id_persona, dni, fecha_nacimiento) VALUES (?, ?, ?)";
+                    try (PreparedStatement stmtInsertPaciente = connection.prepareStatement(sqlInsertPaciente)) {
+                        stmtInsertPaciente.setInt(1, idPersona);
+                        stmtInsertPaciente.setString(2, paciente.getDni());
+                        stmtInsertPaciente.setDate(3, java.sql.Date.valueOf(paciente.getFechaNacimiento()));
+                        stmtInsertPaciente.executeUpdate();
+                    }
+                } else {
+                    throw new SQLException("Creating persona failed, no ID obtained.");
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }

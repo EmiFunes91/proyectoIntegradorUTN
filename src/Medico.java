@@ -1,4 +1,4 @@
-class Medico extends Persona {
+public class Medico extends Persona {
     private String especialidad;
     private String tipo;
 
@@ -23,5 +23,11 @@ class Medico extends Persona {
     public void setTipo(String tipo) {
         this.tipo = tipo;
     }
+
+    public int getIdPersona() {
+        return getId();
+    }
 }
+
+
 
