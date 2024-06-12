@@ -6,11 +6,17 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Debug (Launch)",
+            "request": "launch",
+            "mainClass": "com.example.Main",
+            "projectName": "my-java-project"
+        },
+        {
+            "type": "java",
             "name": "Launch Java Program",
             "request": "launch",
             "mainClass": ""
         },
-        
         {
             "type": "java",
             "name": "Current File",
@@ -23,6 +29,6 @@
             "request": "launch",
             "mainClass": "Main",
             "projectName": "proyectoIntegradorUTN_6105afbc"
-        }
+        },
     ]
 }
