@@ -2,43 +2,37 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class AsignacionCamaDAO {
+    private Connection connection;
+
+    public AsignacionCamaDAO(Connection connection) {
+        this.connection = connection;
+    }
 
     public void createAsignacionCama(AsignacionCama asignacionCama) {
-        String sql = "INSERT INTO AsignacionCama (id_enfermera, id_cama, fecha, turno) VALUES (?, ?, ?, ?)";
-        try (Connection conn = DatabaseConnection.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
-
-            pstmt.setInt(1, asignacionCama.getIdEnfermera());
-            pstmt.setInt(2, asignacionCama.getIdCama());
-            pstmt.setObject(3, asignacionCama.getFecha());
-            pstmt.setString(4, asignacionCama.getTurno());
-
-            pstmt.executeUpdate();
-
-            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    asignacionCama.setId(generatedKeys.getInt(1));
-                } else {
-                    throw new SQLException("Creating AsignacionCama failed, no ID obtained.");
-                }
-            }
+        String sql = "INSERT INTO asignaciones_cama (id_enfermera, id_cama, fecha, turno) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, asignacionCama.getIdEnfermera());
+            stmt.setInt(2, asignacionCama.getIdCama());
+            stmt.setTimestamp(3, Timestamp.valueOf(asignacionCama.getFecha()));
+            stmt.setString(4, asignacionCama.getTurno());
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public AsignacionCama getById(int id) {
-        String sql = "SELECT * FROM AsignacionCama WHERE id = ?";
+        String sql = "SELECT * FROM asignaciones_cama WHERE id = ?";
         AsignacionCama asignacionCama = null;
-        try (Connection conn = DatabaseConnection.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
 
@@ -47,7 +41,7 @@ public class AsignacionCamaDAO {
                         rs.getInt("id"),
                         rs.getInt("id_enfermera"),
                         rs.getInt("id_cama"),
-                        rs.getObject("fecha", LocalDateTime.class).toLocalDate(),
+                        rs.getTimestamp("fecha").toLocalDateTime(),
                         rs.getString("turno"));
             }
         } catch (SQLException e) {
@@ -58,17 +52,16 @@ public class AsignacionCamaDAO {
 
     public List<AsignacionCama> getAll() {
         List<AsignacionCama> asignaciones = new ArrayList<>();
-        String sql = "SELECT * FROM AsignacionCama";
-        try (Connection conn = DatabaseConnection.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql);
-                ResultSet rs = pstmt.executeQuery()) {
+        String sql = "SELECT * FROM asignaciones_cama";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
                 AsignacionCama asignacionCama = new AsignacionCama(
                         rs.getInt("id"),
                         rs.getInt("id_enfermera"),
                         rs.getInt("id_cama"),
-                        rs.getObject("fecha", LocalDateTime.class).toLocalDate(),
+                        rs.getTimestamp("fecha").toLocalDateTime(),
                         rs.getString("turno"));
                 asignaciones.add(asignacionCama);
             }
@@ -79,13 +72,11 @@ public class AsignacionCamaDAO {
     }
 
     public void update(AsignacionCama asignacionCama) {
-        String sql = "UPDATE AsignacionCama SET id_enfermera = ?, id_cama = ?, fecha = ?, turno = ? WHERE id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
+        String sql = "UPDATE asignaciones_cama SET id_enfermera = ?, id_cama = ?, fecha = ?, turno = ? WHERE id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, asignacionCama.getIdEnfermera());
             pstmt.setInt(2, asignacionCama.getIdCama());
-            pstmt.setObject(3, asignacionCama.getFecha());
+            pstmt.setTimestamp(3, Timestamp.valueOf(asignacionCama.getFecha()));
             pstmt.setString(4, asignacionCama.getTurno());
             pstmt.setInt(5, asignacionCama.getId());
 
@@ -96,10 +87,8 @@ public class AsignacionCamaDAO {
     }
 
     public void delete(AsignacionCama asignacionCama) {
-        String sql = "DELETE FROM AsignacionCama WHERE id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
+        String sql = "DELETE FROM asignaciones_cama WHERE id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, asignacionCama.getId());
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -107,7 +96,7 @@ public class AsignacionCamaDAO {
         }
     }
 
-    public static void gestionAsignaciones(Scanner scanner) {
+    public static void gestionAsignaciones(Scanner scanner) throws SQLException {
         System.out.println("Seleccione una opción:");
         System.out.println("1. Crear una nueva asignación de cama");
         System.out.println("2. Ver todas las asignaciones de cama");
@@ -118,7 +107,8 @@ public class AsignacionCamaDAO {
         int opcion = scanner.nextInt();
         scanner.nextLine(); // Limpiar el buffer de entrada
 
-        AsignacionCamaDAO asignacionCamaDAO = new AsignacionCamaDAO();
+        AsignacionCamaDAO asignacionCamaDAO = new AsignacionCamaDAO(DatabaseConnection.getConnection());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         switch (opcion) {
             case 1:
@@ -130,7 +120,7 @@ public class AsignacionCamaDAO {
                 scanner.nextLine(); // Limpiar el buffer de entrada
                 System.out.println("Ingrese la fecha (AAAA-MM-DD HH:mm:ss):");
                 String fechaStr = scanner.nextLine();
-                LocalDateTime fecha = LocalDateTime.parse(fechaStr);
+                LocalDateTime fecha = LocalDateTime.parse(fechaStr, formatter);
                 System.out.println("Ingrese el turno:");
                 String turno = scanner.nextLine();
 
@@ -163,7 +153,7 @@ public class AsignacionCamaDAO {
                     scanner.nextLine(); // Limpiar el buffer de entrada
                     System.out.println("Ingrese la nueva fecha (AAAA-MM-DD HH:mm:ss):");
                     String nuevaFechaStr = scanner.nextLine();
-                    LocalDateTime nuevaFecha = LocalDateTime.parse(nuevaFechaStr);
+                    LocalDateTime nuevaFecha = LocalDateTime.parse(nuevaFechaStr, formatter);
                     System.out.println("Ingrese el nuevo turno:");
                     String nuevoTurno = scanner.nextLine();
 
@@ -198,3 +188,5 @@ public class AsignacionCamaDAO {
         }
     }
 }
+
+

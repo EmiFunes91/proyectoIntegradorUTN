@@ -1,14 +1,13 @@
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class AsignacionCama {
     private int id;
     private int idEnfermera;
     private int idCama;
-    private LocalDate fecha;
+    private LocalDateTime fecha;
     private String turno;
 
-    public AsignacionCama(int id, int idEnfermera, int idCama, LocalDate fecha, String turno) {
+    public AsignacionCama(int id, int idEnfermera, int idCama, LocalDateTime fecha, String turno) {
         this.id = id;
         this.idEnfermera = idEnfermera;
         this.idCama = idCama;
@@ -19,7 +18,7 @@ public class AsignacionCama {
     public AsignacionCama(int idEnfermera, int idCama, LocalDateTime fecha, String turno) {
         this.idEnfermera = idEnfermera;
         this.idCama = idCama;
-        this.fecha = fecha.toLocalDate();
+        this.fecha = fecha;
         this.turno = turno;
     }
 
@@ -48,11 +47,11 @@ public class AsignacionCama {
         this.idCama = idCama;
     }
 
-    public LocalDate getFecha() {
+    public LocalDateTime getFecha() {
         return fecha;
     }
 
-    public void setFecha(LocalDate fecha) {
+    public void setFecha(LocalDateTime fecha) {
         this.fecha = fecha;
     }
 
@@ -63,9 +62,6 @@ public class AsignacionCama {
     public void setTurno(String turno) {
         this.turno = turno;
     }
-
-    public void setFecha(LocalDateTime nuevaFecha) {
-        this.fecha = nuevaFecha.toLocalDate();
-    }
 }
+
 

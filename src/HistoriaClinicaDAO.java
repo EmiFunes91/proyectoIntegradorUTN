@@ -1,62 +1,81 @@
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalDate;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class HistoriaClinicaDAO {
+    private Connection connection;
 
-    // Crear una nueva historia clínica
+    public HistoriaClinicaDAO(Connection connection) {
+        this.connection = connection;
+    }
+
     public void createHistoriaClinica(HistoriaClinica historiaClinica) {
-        String sql = "INSERT INTO HistoriasClinicas (id_paciente, problema, fecha_creacion) VALUES (?, ?, ?)";
-        try (Connection conn = DatabaseConnection.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, historiaClinica.getIdPaciente());
-            pstmt.setString(2, historiaClinica.getProblema());
-            pstmt.setDate(3, java.sql.Date.valueOf(historiaClinica.getFechaCreacion()));
-            pstmt.executeUpdate();
+        String sql = "INSERT INTO historiasclinicas (id_paciente, problema, fecha_creacion) VALUES (?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, historiaClinica.getIdPaciente());
+            stmt.setString(2, historiaClinica.getProblema());
+            stmt.setDate(3, new java.sql.Date(historiaClinica.getFechaCreacion().getTime()));
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    // Obtener una historia clínica por su ID
-    public HistoriaClinica getHistoriaClinicaById(int id) {
-        String sql = "SELECT * FROM HistoriasClinicas WHERE id = ?";
-        HistoriaClinica historiaClinica = null;
-        try (Connection conn = DatabaseConnection.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, id);
-            ResultSet rs = pstmt.executeQuery();
+    public HistoriaClinica readHistoriaClinica(int id) {
+        String sql = "SELECT * FROM historiasclinicas WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                historiaClinica = new HistoriaClinica(
+                return new HistoriaClinica(
                         rs.getInt("id"),
                         rs.getInt("id_paciente"),
                         rs.getString("problema"),
-                        sql, rs.getDate("fecha_creacion").toLocalDate());
+                        rs.getDate("fecha_creacion")
+                );
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return historiaClinica;
+        return null;
     }
 
-    // Obtener todas las historias clínicas
+    public void updateHistoriaClinica(HistoriaClinica historiaClinica) {
+        String sql = "UPDATE historiasclinicas SET id_paciente = ?, problema = ?, fecha_creacion = ? WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, historiaClinica.getIdPaciente());
+            stmt.setString(2, historiaClinica.getProblema());
+            stmt.setDate(3, new java.sql.Date(historiaClinica.getFechaCreacion().getTime()));
+            stmt.setInt(4, historiaClinica.getId());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteHistoriaClinica(int id) {
+        String sql = "DELETE FROM historiasclinicas WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public List<HistoriaClinica> getAllHistoriasClinicas() {
         List<HistoriaClinica> historiasClinicas = new ArrayList<>();
-        String sql = "SELECT * FROM HistoriasClinicas";
-        try (Connection conn = DatabaseConnection.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql);
-                ResultSet rs = pstmt.executeQuery()) {
+        String sql = "SELECT * FROM historiasclinicas";
+        try (Statement stmt = connection.createStatement()) {
+            ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 HistoriaClinica historiaClinica = new HistoriaClinica(
                         rs.getInt("id"),
                         rs.getInt("id_paciente"),
                         rs.getString("problema"),
-                        sql, rs.getDate("fecha_creacion").toLocalDate());
+                        rs.getDate("fecha_creacion")
+                );
                 historiasClinicas.add(historiaClinica);
             }
         } catch (SQLException e) {
@@ -65,35 +84,7 @@ public class HistoriaClinicaDAO {
         return historiasClinicas;
     }
 
-    // Actualizar una historia clínica
-    public void updateHistoriaClinica(HistoriaClinica historiaClinica) {
-        String sql = "UPDATE HistoriasClinicas SET id_paciente = ?, problema = ?, fecha_creacion = ? WHERE id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, historiaClinica.getIdPaciente());
-            pstmt.setString(2, historiaClinica.getProblema());
-            pstmt.setDate(3, java.sql.Date.valueOf(historiaClinica.getFechaCreacion()));
-            pstmt.setInt(4, historiaClinica.getId());
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Eliminar una historia clínica
-    public void deleteHistoriaClinica(int id) {
-        String sql = "DELETE FROM HistoriasClinicas WHERE id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, id);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Método para gestionar las historias clínicas
-    public static void gestionHistoriasClinicas(Scanner scanner) {
+    public static void gestionHistoriasClinicas(Scanner scanner) throws SQLException {
         System.out.println("Seleccione una opción:");
         System.out.println("1. Crear una nueva historia clínica");
         System.out.println("2. Ver todas las historias clínicas");
@@ -104,7 +95,7 @@ public class HistoriaClinicaDAO {
         int opcion = scanner.nextInt();
         scanner.nextLine(); // Limpiar el buffer de entrada
 
-        HistoriaClinicaDAO historiaClinicaDAO = new HistoriaClinicaDAO();
+        HistoriaClinicaDAO historiaClinicaDAO = new HistoriaClinicaDAO(DatabaseConnection.getConnection());
 
         switch (opcion) {
             case 1:
@@ -115,60 +106,54 @@ public class HistoriaClinicaDAO {
                 String problema = scanner.nextLine();
                 System.out.println("Ingrese la fecha de creación (AAAA-MM-DD):");
                 String fechaCreacionStr = scanner.nextLine();
-                LocalDate fechaCreacion = LocalDate.parse(fechaCreacionStr);
+                Date fechaCreacion = Date.valueOf(fechaCreacionStr);
 
-                HistoriaClinica nuevaHistoriaClinica = new HistoriaClinica(idPaciente, idPaciente, problema, problema, fechaCreacion);
+                HistoriaClinica nuevaHistoriaClinica = new HistoriaClinica(idPaciente, problema, fechaCreacion);
                 historiaClinicaDAO.createHistoriaClinica(nuevaHistoriaClinica);
                 System.out.println("Nueva historia clínica creada con éxito.");
                 break;
             case 2:
                 List<HistoriaClinica> historiasClinicas = historiaClinicaDAO.getAllHistoriasClinicas();
-                if (historiasClinicas.isEmpty()) {
-                    System.out.println("No hay historias clínicas para mostrar.");
-                } else {
-                    System.out.println("Historias Clínicas:");
-                    for (HistoriaClinica hc : historiasClinicas) {
-                        System.out.println(hc);
-                    }
+                for (HistoriaClinica historiaClinica : historiasClinicas) {
+                    System.out.println(historiaClinica);
                 }
                 break;
             case 3:
-                System.out.println("Ingrese el ID de la historia clínica que desea actualizar:");
-                int idActualizar = scanner.nextInt();
+                System.out.println("Ingrese el ID de la historia clínica a actualizar:");
+                int id = scanner.nextInt();
                 scanner.nextLine(); // Limpiar el buffer de entrada
-                HistoriaClinica historiaClinicaActualizar = historiaClinicaDAO.getHistoriaClinicaById(idActualizar);
-                if (historiaClinicaActualizar != null) {
-                    System.out.println("Ingrese el nuevo ID del paciente:");
-                    int nuevoIdPaciente = scanner.nextInt();
-                    scanner.nextLine(); // Limpiar el buffer de entrada
-                    System.out.println("Ingrese el nuevo problema:");
-                    String nuevoProblema = scanner.nextLine();
-                    System.out.println("Ingrese la nueva fecha de creación (AAAA-MM-DD):");
-                    String nuevaFechaCreacionStr = scanner.nextLine();
-                    LocalDate nuevaFechaCreacion = LocalDate.parse(nuevaFechaCreacionStr);
 
-                    historiaClinicaActualizar.setIdPaciente(nuevoIdPaciente);
-                    historiaClinicaActualizar.setProblema(nuevoProblema);
-                    historiaClinicaActualizar.setFechaCreacion(nuevaFechaCreacion);
-
-                    historiaClinicaDAO.updateHistoriaClinica(historiaClinicaActualizar);
-                    System.out.println("Historia clínica actualizada con éxito.");
-                } else {
-                    System.out.println("La historia clínica con el ID especificado no existe.");
+                HistoriaClinica historiaClinica = historiaClinicaDAO.readHistoriaClinica(id);
+                if (historiaClinica == null) {
+                    System.out.println("Historia clínica no encontrada.");
+                    break;
                 }
+
+                System.out.println("Ingrese el nuevo ID del paciente:");
+                idPaciente = scanner.nextInt();
+                scanner.nextLine(); // Limpiar el buffer de entrada
+                System.out.println("Ingrese el nuevo problema:");
+                problema = scanner.nextLine();
+                System.out.println("Ingrese la nueva fecha de creación (AAAA-MM-DD):");
+                fechaCreacionStr = scanner.nextLine();
+                fechaCreacion = Date.valueOf(fechaCreacionStr);
+
+                historiaClinica = new HistoriaClinica(id, idPaciente, problema, fechaCreacion);
+                historiaClinicaDAO.updateHistoriaClinica(historiaClinica);
+                System.out.println("Historia clínica actualizada con éxito.");
                 break;
             case 4:
-                System.out.println("Ingrese el ID de la historia clínica que desea eliminar:");
-                int idEliminar = scanner.nextInt();
+                System.out.println("Ingrese el ID de la historia clínica a eliminar:");
+                id = scanner.nextInt();
                 scanner.nextLine(); // Limpiar el buffer de entrada
-                historiaClinicaDAO.deleteHistoriaClinica(idEliminar);
+                historiaClinicaDAO.deleteHistoriaClinica(id);
                 System.out.println("Historia clínica eliminada con éxito.");
                 break;
             case 5:
-                // No se requiere ninguna acción, simplemente salir del switch
-                break;
+                return;
             default:
-                System.out.println("Opción no válida.");
+                System.out.println("Opción no válida. Intente de nuevo.");
         }
     }
 }
+

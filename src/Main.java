@@ -2,11 +2,11 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        int option;
+        boolean salir = false;
 
-        do {
+        while (!salir) {
             System.out.println("Menu Principal:");
             System.out.println("1. Gestion de Pacientes");
             System.out.println("2. Gestion de Medicos");
@@ -15,33 +15,53 @@ public class Main {
             System.out.println("5. Gestion de Asignaciones");
             System.out.println("6. Salir");
             System.out.print("Seleccione una opción: ");
-            option = scanner.nextInt();
 
-            switch (option) {
+            int opcion = scanner.nextInt();
+            scanner.nextLine(); // Limpiar el buffer de entrada
+
+            switch (opcion) {
                 case 1:
-                    PacienteDAO.gestionPacientes(scanner);
+                    try {
+                        PacienteDAO.gestionPacientes(scanner);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case 2:
-                    MedicoDAO.gestionMedicos(scanner);
+                    try {
+                        MedicoDAO.gestionMedicos(scanner);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case 3:
-                    EnfermeraDAO.gestionEnfermeras(scanner);
+                    try {
+                        EnfermeraDAO.gestionEnfermeras(scanner);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case 4:
-                    HistoriaClinicaDAO.gestionHistoriasClinicas(scanner);
+                    try {
+                        HistoriaClinicaDAO.gestionHistoriasClinicas(scanner);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case 5:
-                    AsignacionCamaDAO.gestionAsignaciones(scanner);
+                    try {
+                        AsignacionCamaDAO.gestionAsignaciones(scanner);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case 6:
-                    System.out.println("Saliendo...");
+                    salir = true;
                     break;
                 default:
                     System.out.println("Opción no válida.");
-                    break;
             }
-        } while (option != 6);
-
+        }
         scanner.close();
     }
 }

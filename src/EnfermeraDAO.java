@@ -11,32 +11,49 @@ public class EnfermeraDAO {
     }
 
     public void createEnfermera(Enfermera enfermera) {
-        String sql = "INSERT INTO enfermeras (nombre, apellido, direccion, telefono, area) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, enfermera.getNombre());
-            stmt.setString(2, enfermera.getApellido());
-            stmt.setString(3, enfermera.getDireccion());
-            stmt.setString(4, enfermera.getTelefono());
-            stmt.setString(5, enfermera.getArea());
-            stmt.executeUpdate();
+        String sqlPersona = "INSERT INTO Persona (nombre, apellido, direccion, telefono) VALUES (?, ?, ?, ?)";
+        String sqlEnfermera = "INSERT INTO enfermera (id_persona, area) VALUES (?, ?)";
+        try (PreparedStatement stmtPersona = connection.prepareStatement(sqlPersona, Statement.RETURN_GENERATED_KEYS);
+             PreparedStatement stmtEnfermera = connection.prepareStatement(sqlEnfermera)) {
+
+            stmtPersona.setString(1, enfermera.getNombre());
+            stmtPersona.setString(2, enfermera.getApellido());
+            stmtPersona.setString(3, enfermera.getDireccion());
+            stmtPersona.setString(4, enfermera.getTelefono());
+            int affectedRows = stmtPersona.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("Creating person failed, no rows affected.");
+            }
+
+            try (ResultSet generatedKeys = stmtPersona.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    int idPersona = generatedKeys.getInt(1);
+                    stmtEnfermera.setInt(1, idPersona);
+                    stmtEnfermera.setString(2, enfermera.getArea());
+                    stmtEnfermera.executeUpdate();
+                } else {
+                    throw new SQLException("Creating person failed, no ID obtained.");
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public Enfermera readEnfermera(int id) {
-        String sql = "SELECT * FROM enfermeras WHERE id = ?";
+        String sql = "SELECT * FROM enfermera INNER JOIN Persona ON enfermera.id_persona = Persona.id WHERE enfermera.id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return new Enfermera(
+                        rs.getInt("id"),
                         rs.getString("nombre"),
                         rs.getString("apellido"),
                         rs.getString("direccion"),
                         rs.getString("telefono"),
-                        rs.getString("area")
-                );
+                        rs.getString("area"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -45,24 +62,37 @@ public class EnfermeraDAO {
     }
 
     public void updateEnfermera(Enfermera enfermera) {
-        String sql = "UPDATE enfermeras SET nombre = ?, apellido = ?, direccion = ?, telefono = ?, area = ? WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, enfermera.getNombre());
-            stmt.setString(2, enfermera.getApellido());
-            stmt.setString(3, enfermera.getDireccion());
-            stmt.setString(4, enfermera.getTelefono());
-            stmt.setString(5, enfermera.getArea());
-            stmt.executeUpdate();
+        String sqlPersona = "UPDATE Persona SET nombre = ?, apellido = ?, direccion = ?, telefono = ? WHERE id = ?";
+        String sqlEnfermera = "UPDATE enfermera SET area = ? WHERE id_persona = ?";
+        try (PreparedStatement stmtPersona = connection.prepareStatement(sqlPersona);
+             PreparedStatement stmtEnfermera = connection.prepareStatement(sqlEnfermera)) {
+
+            stmtPersona.setString(1, enfermera.getNombre());
+            stmtPersona.setString(2, enfermera.getApellido());
+            stmtPersona.setString(3, enfermera.getDireccion());
+            stmtPersona.setString(4, enfermera.getTelefono());
+            stmtPersona.setInt(5, enfermera.getIdPersona());
+            stmtPersona.executeUpdate();
+
+            stmtEnfermera.setString(1, enfermera.getArea());
+            stmtEnfermera.setInt(2, enfermera.getIdPersona());
+            stmtEnfermera.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public void deleteEnfermera(int id) {
-        String sql = "DELETE FROM enfermeras WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            stmt.executeUpdate();
+        String sqlEnfermera = "DELETE FROM enfermera WHERE id = ?";
+        String sqlPersona = "DELETE FROM Persona WHERE id = ?";
+        try (PreparedStatement stmtEnfermera = connection.prepareStatement(sqlEnfermera);
+             PreparedStatement stmtPersona = connection.prepareStatement(sqlPersona)) {
+
+            stmtEnfermera.setInt(1, id);
+            stmtEnfermera.executeUpdate();
+
+            stmtPersona.setInt(1, id);
+            stmtPersona.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -70,17 +100,17 @@ public class EnfermeraDAO {
 
     public List<Enfermera> getAllEnfermeras() {
         List<Enfermera> enfermeras = new ArrayList<>();
-        String sql = "SELECT * FROM enfermeras";
+        String sql = "SELECT * FROM enfermera INNER JOIN Persona ON enfermera.id_persona = Persona.id";
         try (Statement stmt = connection.createStatement()) {
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 Enfermera enfermera = new Enfermera(
+                        rs.getInt("id"),
                         rs.getString("nombre"),
                         rs.getString("apellido"),
                         rs.getString("direccion"),
                         rs.getString("telefono"),
-                        rs.getString("area")
-                );
+                        rs.getString("area"));
                 enfermeras.add(enfermera);
             }
         } catch (SQLException e) {
@@ -104,8 +134,6 @@ public class EnfermeraDAO {
 
         switch (opcion) {
             case 1:
-                System.out.println("Ingrese el ID de la enfermera:");
-                scanner.nextLine(); // Limpiar el buffer de entrada
                 System.out.println("Ingrese el nombre de la enfermera:");
                 String nombre = scanner.nextLine();
                 System.out.println("Ingrese el apellido de la enfermera:");
@@ -147,13 +175,13 @@ public class EnfermeraDAO {
                     System.out.println("Ingrese el nuevo teléfono de la enfermera:");
                     String nuevoTelefono = scanner.nextLine();
                     System.out.println("Ingrese el nuevo área de la enfermera:");
-                    String nuevaArea = scanner.nextLine();
+                    String nuevoArea = scanner.nextLine();
 
                     enfermeraActualizar.setNombre(nuevoNombre);
                     enfermeraActualizar.setApellido(nuevoApellido);
                     enfermeraActualizar.setDireccion(nuevaDireccion);
                     enfermeraActualizar.setTelefono(nuevoTelefono);
-                    enfermeraActualizar.setArea(nuevaArea);
+                    enfermeraActualizar.setArea(nuevoArea);
 
                     enfermeraDAO.updateEnfermera(enfermeraActualizar);
                     System.out.println("Enfermera actualizada con éxito.");
@@ -164,15 +192,16 @@ public class EnfermeraDAO {
             case 4:
                 System.out.println("Ingrese el ID de la enfermera que desea eliminar:");
                 int idEliminar = scanner.nextInt();
-                scanner.nextLine(); // Limpiar el buffer de entrada
+                scanner.nextLine();
                 enfermeraDAO.deleteEnfermera(idEliminar);
                 System.out.println("Enfermera eliminada con éxito.");
                 break;
             case 5:
-                // Volver al menú principal
+                System.out.println("Volviendo al menú principal.");
                 break;
             default:
-                System.out.println("Opción no válida.");
+                System.out.println("Opción no válida. Intente de nuevo.");
         }
     }
 }
+
