@@ -4,9 +4,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        boolean salir = false;
-
-        while (!salir) {
+        while (true) {
             System.out.println("Menu Principal:");
             System.out.println("1. Gestion de Pacientes");
             System.out.println("2. Gestion de Medicos");
@@ -15,7 +13,6 @@ public class Main {
             System.out.println("5. Gestion de Asignaciones");
             System.out.println("6. Salir");
             System.out.print("Seleccione una opción: ");
-
             int opcion = scanner.nextInt();
             scanner.nextLine(); // Limpiar el buffer de entrada
 
@@ -56,12 +53,14 @@ public class Main {
                     }
                     break;
                 case 6:
-                    salir = true;
-                    break;
+                    System.out.println("Saliendo...");
+                    scanner.close();
+                    return;
                 default:
                     System.out.println("Opción no válida.");
             }
         }
-        scanner.close();
     }
 }
+
+

@@ -11,7 +11,6 @@ public class PacienteDAO {
     }
 
     public void createPaciente(Paciente paciente) {
-        // Insertar datos del paciente en la tabla persona
         String sqlInsertPersona = "INSERT INTO Persona (nombre, apellido, direccion, telefono) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmtInsertPersona = connection.prepareStatement(sqlInsertPersona, Statement.RETURN_GENERATED_KEYS)) {
             stmtInsertPersona.setString(1, paciente.getNombre());
@@ -25,8 +24,7 @@ public class PacienteDAO {
             try (ResultSet generatedKeys = stmtInsertPersona.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     int idPersona = generatedKeys.getInt(1);
-                    // Insertar datos específicos del paciente en la tabla pacientes
-                    String sqlInsertPaciente = "INSERT INTO pacientes (id_persona, dni, fecha_nacimiento) VALUES (?, ?, ?)";
+                    String sqlInsertPaciente = "INSERT INTO Paciente (id_persona, dni, fecha_nacimiento) VALUES (?, ?, ?)";
                     try (PreparedStatement stmtInsertPaciente = connection.prepareStatement(sqlInsertPaciente)) {
                         stmtInsertPaciente.setInt(1, idPersona);
                         stmtInsertPaciente.setString(2, paciente.getDni());
@@ -41,9 +39,12 @@ public class PacienteDAO {
             e.printStackTrace();
         }
     }
-    
+
     public Paciente readPaciente(String dni) {
-        String sql = "SELECT * FROM pacientes WHERE dni = ?";
+        String sql = "SELECT pe.nombre, pe.apellido, pe.direccion, pe.telefono, p.dni, p.fecha_nacimiento " +
+                     "FROM Paciente p " +
+                     "JOIN Persona pe ON p.id_persona = pe.id " +
+                     "WHERE p.dni = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, dni);
             ResultSet rs = stmt.executeQuery();
@@ -63,22 +64,27 @@ public class PacienteDAO {
     }
 
     public void updatePaciente(Paciente paciente) {
-        String sql = "UPDATE pacientes SET nombre = ?, apellido = ?, direccion = ?, telefono = ?, fecha_nacimiento = ? WHERE dni = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, paciente.getNombre());
-            stmt.setString(2, paciente.getApellido());
-            stmt.setString(3, paciente.getDireccion());
-            stmt.setString(4, paciente.getTelefono());
-            stmt.setString(5, paciente.getFechaNacimiento());
-            stmt.setString(6, paciente.getDni());
-            stmt.executeUpdate();
+        String sqlUpdatePersona = "UPDATE Persona SET nombre = ?, apellido = ?, direccion = ?, telefono = ? WHERE id = (SELECT id_persona FROM Paciente WHERE dni = ?)";
+        String sqlUpdatePaciente = "UPDATE Paciente SET fecha_nacimiento = ? WHERE dni = ?";
+        try (PreparedStatement stmtUpdatePersona = connection.prepareStatement(sqlUpdatePersona);
+             PreparedStatement stmtUpdatePaciente = connection.prepareStatement(sqlUpdatePaciente)) {
+            stmtUpdatePersona.setString(1, paciente.getNombre());
+            stmtUpdatePersona.setString(2, paciente.getApellido());
+            stmtUpdatePersona.setString(3, paciente.getDireccion());
+            stmtUpdatePersona.setString(4, paciente.getTelefono());
+            stmtUpdatePersona.setString(5, paciente.getDni());
+            stmtUpdatePersona.executeUpdate();
+
+            stmtUpdatePaciente.setString(1, paciente.getFechaNacimiento());
+            stmtUpdatePaciente.setString(2, paciente.getDni());
+            stmtUpdatePaciente.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public void deletePaciente(String dni) {
-        String sql = "DELETE FROM pacientes WHERE dni = ?";
+        String sql = "DELETE FROM Paciente WHERE dni = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, dni);
             stmt.executeUpdate();
@@ -89,7 +95,9 @@ public class PacienteDAO {
 
     public List<Paciente> getAllPacientes() {
         List<Paciente> pacientes = new ArrayList<>();
-        String sql = "SELECT * FROM pacientes";
+        String sql = "SELECT pe.nombre, pe.apellido, pe.direccion, pe.telefono, p.dni, p.fecha_nacimiento " +
+                     "FROM Paciente p " +
+                     "JOIN Persona pe ON p.id_persona = pe.id";
         try (Statement stmt = connection.createStatement()) {
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
@@ -191,11 +199,11 @@ public class PacienteDAO {
                 }
                 break;
             case 5:
-                // No se requiere ninguna acción, simplemente salir del switch
-                break;
+                return; // Volver al menú principal
             default:
                 System.out.println("Opción no válida.");
         }
     }
-
 }
+
+
