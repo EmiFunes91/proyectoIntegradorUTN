@@ -29,11 +29,9 @@ public class AsignacionCamaDAO {
     }
 
     public AsignacionCama getById(int id) {
-        String sql = "SELECT * FROM AsignacionCama WHERE id = ?";
+        String sql = "SELECT * FROM asignaciones_cama WHERE id = ?";
         AsignacionCama asignacionCama = null;
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
 
@@ -53,9 +51,8 @@ public class AsignacionCamaDAO {
 
     public List<AsignacionCama> getAll() {
         List<AsignacionCama> asignaciones = new ArrayList<>();
-        String sql = "SELECT * FROM AsignacionCama";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
+        String sql = "SELECT * FROM asignaciones_cama";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
 
             while (rs.next()) {
@@ -74,16 +71,13 @@ public class AsignacionCamaDAO {
     }
 
     public void update(AsignacionCama asignacionCama) {
-        String sql = "UPDATE AsignacionCama SET id_enfermera = ?, id_cama = ?, fecha_hora = ?, turno = ? WHERE id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
+        String sql = "UPDATE asignaciones_cama SET id_enfermera = ?, id_cama = ?, fecha_hora = ?, turno = ? WHERE id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, asignacionCama.getIdEnfermera());
             pstmt.setInt(2, asignacionCama.getIdCama());
             pstmt.setDate(3, Date.valueOf(asignacionCama.getFecha()));
             pstmt.setString(4, asignacionCama.getTurno());
             pstmt.setInt(5, asignacionCama.getId());
-
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -91,10 +85,8 @@ public class AsignacionCamaDAO {
     }
 
     public void delete(AsignacionCama asignacionCama) {
-        String sql = "DELETE FROM AsignacionCama WHERE id = ?";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
+        String sql = "DELETE FROM asignaciones_cama WHERE id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setInt(1, asignacionCama.getId());
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -194,6 +186,7 @@ public class AsignacionCamaDAO {
         }
     }
 }
+
 
 
 
